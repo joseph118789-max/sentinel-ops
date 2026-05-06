@@ -1,0 +1,16 @@
+---
+# This file is NOT intended to be used for production.
+# For security hardening, replace internal_users.yml with your own configuration.
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+admin:
+  hash: "$2y$12$kkZ.rJzNPPOIFMmRqQ4jZeHqCYlqJ4VIGTJJfKNgzfFB9L8vq5K1q"
+  reserved: true
+  description: "Admin user"
+
+kibanaserver:
+  hash: "$2y$12$kkZ.rJzNPPOIFMmRqQ4jZeHqCYlqJ4VIGTJJfKNgzfFB9L8vq5K1q"
+  reserved: true
+  description: "Kibana server user"
