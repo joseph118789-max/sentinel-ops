@@ -1,0 +1,255 @@
+# Demo Environment Setup Playbook
+# Creates a realistic 3-server demo environment with Wazuh monitoring
+
+- name: Set up Sentinel Ops Demo Environment
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    demo_vms:
+      - { name: web-01, ip: 10.0.2.10, os: ubuntu22.04, role: web }
+      - { name: db-01, ip: 10.0.2.11, os: ubuntu22.04, role: database }
+      - { name: mail-01, ip: 10.0.2.12, os: debian11, role: mail }
+    wazuh_manager_ip: "10.0.1.50"
+  tasks:
+    - name: Create demo inventory file
+      ansible.builtin.copy:
+        content: |
+          # Sentinel Ops Demo Inventory
+          # Generated: {{ ansible_date_time.iso8601 }}
+          
+          all:
+            vars:
+              ansible_user: sentinel
+              wazuh_manager_ip: "{{ wazuh_manager_ip }}"
+              sentinel_ops_email: agent@openclaw.ai
+            children:
+              wazuh_managers:
+                hosts:
+                  wazuh-01:
+                    ansible_host: {{ wazuh_manager_ip }}
+                    os: ubuntu 22.04
+              demo_servers:
+                hosts:
+                  web-01:
+                    ansible_host: 10.0.2.10
+                    os: ubuntu 22.04
+                    server_role: web
+                    client: demo
+                  db-01:
+                    ansible_host: 10.0.2.11
+                    os: ubuntu 22.04
+                    server_role: database
+                    client: demo
+                  mail-01:
+                    ansible_host: 10.0.2.12
+                    os: debian 11
+                    server_role: mail
+                    client: demo
+        dest: /root/.openclaw/workspace/projects/sentinel_ops/ansible/inventories/demo/hosts.yml
+
+    - name: Create demo README
+      ansible.builtin.copy:
+        content: |
+          # Sentinel Ops Demo Environment
+          
+          ## Architecture
+          
+          ```
+          Internet
+              │
+          ┌─────────────────────────────────┐
+          │   Wazuh Manager (10.0.1.50)     │
+          │   Ubuntu 22.04 LTS              │
+          │   - Wazuh Manager 4.9            │
+          │   - Elasticsearch 8.x             │
+          │   - Kibana                       │
+          │   Ports: 1514/udp, 1515/tcp, 55000 │
+          └────────────┬────────────────────┘
+                       │ UDP/1514, TCP/1515
+           ┌────────────┼────────────┬────────────┐
+           │            │            │            │
+         web-01      db-01       mail-01       [future]
+         10.0.2.10   10.0.2.11   10.0.2.12     clients
+         Ubuntu 22   Ubuntu 22   Debian 11
+           └────────────┼────────────┘
+                    Wazuh Agents
+          ```
+          
+          ## Server Details
+          
+          | Server | IP | OS | Role | Key Services |
+          |---------|----|----|------|-------------|
+          | wazuh-01 | 10.0.1.50 | Ubuntu 22.04 | Wazuh Manager | Manager, API, Indexer |
+          | web-01 | 10.0.2.10 | Ubuntu 22.04 | Web server | Nginx, PHP |
+          | db-01 | 10.0.2.11 | Ubuntu 22.04 | Database | PostgreSQL |
+          | mail-01 | 10.0.2.12 | Debian 11 | Mail server | Postfix, IMAP |
+          
+          ## How to Use This Demo
+          
+          1. **Deploy Wazuh Manager:**
+          ```bash
+          cd /root/.openclaw/workspace/projects/sentinel_ops/ansible
+          ansible-playbook playbooks/wazuh-manager.yml -i inventories/demo/hosts.yml
+          ```
+          
+          2. **Deploy Agents:**
+          ```bash
+          ansible-playbook playbooks/wazuh-agent.yml -i inventories/demo/hosts.yml
+          ```
+          
+          3. **Apply Hardening:**
+          ```bash
+          ansible-playbook playbooks/hardening.yml -i inventories/demo/hosts.yml
+          ```
+          
+          4. **Trigger Demo Alerts:**
+          - SSH with wrong password → brute force alert
+          - Create new sudo user → privilege escalation alert
+          - Modify /etc/passwd → file integrity alert
+          
+          ## Expected Findings
+          
+          **Before Hardening:**
+          - SSH root login enabled
+          - Password auth enabled
+          - UFW not configured (or default allow)
+          - Unused services running (telnet, rsh)
+          - Open ports with no firewall
+          
+          **After Hardening:**
+          - Root login disabled
+          - Key-only SSH
+          - Firewall default deny
+          - Only required ports open
+          - auditd logging all auth events
+          
+          ## Demo Scenarios
+          
+          **Scenario 1: SSH Brute Force Detection**
+          ```
+          1. From external IP, run: for i in {1..15}; ssh wrongpass@10.0.2.10; done
+          2. Wazuh catches: "authentication_failed" rule, level 10
+          3. Alert fires: "SSH brute force attack detected"
+          4. Triage: confirm it's our own test, whitelist IP, document in tuning-log
+          ```
+          
+          **Scenario 2: File Integrity Alert**
+          ```
+          1. Attacker modifies /etc/passwd to add new user
+          2. Wazuh FIM detects change
+          3. Alert fires: "File integrity checksum changed: /etc/passwd"
+          4. Triage: check if authorized change, if not → CRITICAL escalation
+          ```
+          
+          **Scenario 3: Privilege Escalation**
+          ```
+          1. Attacker gets low-level access, runs: sudo su -
+          2. Wazuh logs: "Successful sudo to ROOT executed"
+          3. Alert fires: "Privileged command executed"
+          4. Triage: check if normal admin usage, document in tuning-log
+          ```
+          
+          ## Sample Monthly Report Data
+          
+          This demo generates:
+          - 47 total alerts (month)
+          - 3 high (SSH brute force test, unauthorized sudo)
+          - 12 medium (configuration warnings)
+          - 32 low / informational
+          - Risk score: 34/100 (pre-hardening) → 18/100 (post-hardening)
+          
+        dest: /root/.openclaw/workspace/projects/sentinel_ops/ansible/inventories/demo/README.md
+
+    - name: Create agent templates directory
+      ansible.builtin.file:
+        path: /root/.openclaw/workspace/projects/sentinel_ops/ansible/roles/wazuh-agent/templates
+        state: directory
+
+    - name: Create Wazuh agent config template
+      ansible.builtin.copy:
+        content: |
+          <!-- Wazuh Agent Configuration -->
+          <!-- Template for /var/ossec/etc/ossec.conf -->
+          <ossec_config>
+            <client>
+              <server>
+                <address>{{ wazuh_manager_ip }}</address>
+                <port>1514</port>
+                <protocol>udp</protocol>
+              </server>
+              <config-profile>linux</config-profile>
+              <notify_time>10</notify_time>
+              <time-reconnect>60</time-reconnect>
+            </client>
+            
+            <rootcheck>
+              <frequency>36000</frequency>
+              <rootkit_files>/var/ossec/etc/shared/rootkit_files.txt</rootkit_files>
+              <rootkit_trojans>/var/ossec/etc/shared/rootkit_trojans.txt</rootkit_trojans>
+              <system_audit>/var/ossec/etc/shared/system_audit_rcl.txt</system_audit>
+            </rootcheck>
+            
+            <syscheck>
+              <frequency>43200</frequency>
+              <scan_on_start>yes</scan_on_start>
+              <!-- Monitor critical files -->
+              <directories check_all="yes">/etc,/usr/bin,/usr/sbin</directories>
+              <directories check_all="yes">/bin,/sbin</directories>
+              <ignore>/etc/mnttab</ignore>
+              <ignore>/etc/issue.net</ignore>
+            </syscheck>
+            
+            <logging>
+              <logall_json>yes</logall_json>
+            </logging>
+          </ossec_config>
+        dest: /root/.openclaw/workspace/projects/sentinel_ops/ansible/roles/wazuh-agent/templates/ossec.conf.j2
+
+    - name: Create client inventory template
+      ansible.builtin.copy:
+        content: |
+          # Per-client inventory template
+          # Copy this to clients/{client-name}/hosts.yml and customize
+          
+          all:
+            vars:
+              ansible_user: sentinel
+              wazuh_manager_ip: "10.0.1.50"  # Change to actual manager IP
+              sentinel_ops_email: agent@openclaw.ai
+            children:
+              client_servers:
+                vars:
+                  client_name: acme  # Replace with actual client name
+                hosts:
+                  # Add client servers here
+                  # server-01:
+                  #   ansible_host: x.x.x.x
+                  #   os: ubuntu 22.04
+                  #   server_role: web
+                children:
+                  linux_servers:
+                    vars:
+                      ansible_user: sentinel
+                    hosts:
+                      # linux servers — add hosts here
+                  windows_servers:
+                    vars:
+                      ansible_user: administrator
+                    hosts:
+                      # windows servers — add hosts here
+        dest: /root/.openclaw/workspace/projects/sentinel_ops/ansible/inventories/clients/CLIENTNAME-hosts.yml
+
+    - name: Display demo setup info
+      ansible.builtin.debug:
+        msg: |
+          Demo environment setup files created.
+          
+          Next steps:
+          1. Provision 3 VMs (web-01, db-01, mail-01) on 10.0.2.0/24
+          2. Add their IPs to inventories/demo/hosts.yml
+          3. Run: ansible-playbook playbooks/wazuh-manager.yml -i inventories/demo/hosts.yml
+          4. Run: ansible-playbook playbooks/wazuh-agent.yml -i inventories/demo/hosts.yml
+          5. Run: ansible-playbook playbooks/hardening.yml -i inventories/demo/hosts.yml
+          
+          Demo will generate realistic security events for the pilot presentation.

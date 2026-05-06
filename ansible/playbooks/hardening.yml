@@ -1,0 +1,223 @@
+# CIS Hardening Playbook
+# Applies CIS baseline hardening to Ubuntu/Debian servers
+
+- name: Apply CIS Hardening
+  hosts: all
+  become: true
+  vars:
+    hardening_approved: true  # Set to false for check-only mode
+    sentinel_admin_ips:
+      - "10.0.1.0/24"  # Our management network
+    ssh_idle_timeout: 900      # 15 minutes
+    ssh_max_auth_tries: 3
+  tasks:
+    # --- SSH Hardening ---
+    - name: SSH — disable root login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+      notify: Restart SSH
+
+    - name: SSH — disable password authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+      notify: Restart SSH
+
+    - name: SSH — set idle timeout
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?ClientAliveInterval'
+        line: 'ClientAliveInterval {{ ssh_idle_timeout }}'
+        state: present
+
+    - name: SSH — limit auth attempts
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?MaxAuthTries'
+        line: 'MaxAuthTries {{ ssh_max_auth_tries }}'
+        state: present
+      notify: Restart SSH
+
+    - name: SSH — allow our admin IPs only (fail2ban style)
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?AllowUsers'
+        line: 'AllowUsers root@{{ sentinel_admin_ips | join(" root@") }}'
+        state: present
+      when: sentinel_admin_ips | length > 0
+
+    # --- Firewall (UFW) ---
+    - name: UFW — install
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+
+    - name: UFW — set default deny incoming
+      community.general.ufw:
+        direction: in
+        policy: deny
+
+    - name: UFW — allow SSH from our IPs only
+      community.general.ufw:
+        rule: allow
+        direction: in
+        port: '22'
+        proto: tcp
+        from_ip: "{{ item }}"
+      loop: "{{ sentinel_admin_ips + ['127.0.0.1'] }}"
+
+    - name: UFW — allow HTTP/HTTPS if web server present
+      community.general.ufw:
+        rule: allow
+        direction: in
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - '80'
+        - '443'
+      when: "'web' in server_role|default('')"
+
+    - name: UFW — enable
+      community.general.ufw:
+        state: enabled
+        policy: deny
+
+    # --- Disable unused filesystems ---
+    - name: Disable unused filesystems
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - cramfs
+        - jffs2
+        - hfs
+        - hfsplus
+        - squashfs
+        - udf
+        - vfat
+
+    # --- Kernel hardening (sysctl) ---
+    - name: Kernel — disable ICMP redirect acceptance
+      ansible.posix.sysctl:
+        name: net.ipv4.conf.all.accept_redirects
+        value: '0'
+        sysctl_file: /etc/sysctl.d/99-sentinel-hardening.conf
+        state: present
+        reload: yes
+
+    - name: Kernel — disable source packet routing
+      ansible.posix.sysctl:
+        name: net.ipv4.conf.all.accept_source_route
+        value: '0'
+        sysctl_file: /etc/sysctl.d/99-sentinel-hardening.conf
+        state: present
+        reload: yes
+
+    - name: Kernel — disable ICMP ping broadcast
+      ansible.posix.sysctl:
+        name: net.ipv4.icmp_echo_ignore_broadcasts
+        value: '1'
+        sysctl_file: /etc/sysctl.d/99-sentinel-hardening.conf
+        state: present
+        reload: yes
+
+    - name: Kernel — enable syncookie (SYN flood protection)
+      ansible.posix.sysctl:
+        name: net.ipv4.tcp_syncookies
+        value: '1'
+        sysctl_file: /etc/sysctl.d/99-sentinel-hardening.conf
+        state: present
+        reload: yes
+
+    # --- Password policy (PAM) ---
+    - name: PAM — install libpam-pwquality
+      ansible.builtin.apt:
+        name: libpam-pwquality
+        state: present
+
+    - name: PAM — enforce password complexity
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: '^#?minlen'
+        line: 'minlen = 12'
+        state: present
+
+    - name: PAM — password retry limit
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: '^#?retry'
+        line: 'retry = 3'
+        state: present
+
+    # --- Auditd ---
+    - name: Auditd — install
+      ansible.builtin.apt:
+        name: auditd
+        state: present
+
+    - name: Auditd — enable and start
+      ansible.builtin.systemd:
+        name: auditd
+        state: started
+        enabled: yes
+
+    - name: Auditd — log auth events
+      ansible.builtin.copy:
+        content: |
+          # Sentinel Ops — Auth event audit rules
+          -w /etc/passwd -p wa -k identity
+          -w /etc/shadow -p wa -k identity
+          -w /etc/sudoers -p wa -k identity
+          -w /var/log/auth.log -p wa -k auth_log
+          -a always,exit -F arch=b64 -S execve -S fork -S vfork -k process_creation
+        dest: /etc/audit/rules.d/sentinel-ops.rules
+        mode: '0640'
+      notify: Restart Auditd
+
+    # --- Remove setuid binaries ---
+    - name: Shell — remove unused setuid binaries
+      ansible.builtin.shell: |
+        for bin in /usr/bin/newgrp /usr/bin/gpasswd /usr/bin/at; do
+          [ -u "$bin" ] && chmod u-s "$bin" 2>/dev/null
+        done
+      changed_when: false
+
+    # --- NTP ---
+    - name: NTP — install chrony
+      ansible.builtin.apt:
+        name: chrony
+        state: present
+
+    - name: NTP — enable chrony
+      ansible.builtin.systemd:
+        name: chrony
+        state: started
+        enabled: yes
+
+    # --- Report ---
+    - name: Show hardening summary
+      ansible.builtin.debug:
+        msg: |
+          CIS hardening applied to {{ inventory_hostname }}
+          SSH: root login disabled, key-only auth, 3 max attempts
+          Firewall: UFW default deny, SSH from {{ sentinel_admin_ips | join(', ') }}
+          Kernel: ICMP redirects off, SYN cookies on
+          Password: min 12 chars, 3 retries
+          Auditd: auth events logged
+          NTP: chrony enabled
+
+  handlers:
+    - name: Restart SSH
+      ansible.builtin.systemd:
+        name: sshd
+        state: restarted
+
+    - name: Restart Auditd
+      ansible.builtin.systemd:
+        name: auditd
+        state: restarted

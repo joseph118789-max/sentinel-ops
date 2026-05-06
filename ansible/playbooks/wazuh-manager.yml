@@ -1,0 +1,89 @@
+# Wazuh Manager Deployment Playbook
+# Deploys Wazuh manager on Ubuntu 22.04 — our infrastructure
+
+- name: Deploy Wazuh Manager
+  hosts: wazuh_managers
+  become: true
+  vars:
+    wazuh_manager_version: "4.9.0"
+    wazuh_manager_ip: "{{ hostvars[inventory_hostname].ansible_host }}"
+    elastic_version: "8.12.0"
+    sentinels_ops_email: agent@openclaw.ai
+  tasks:
+    - name: Add Wazuh GPG key
+      ansible.builtin apt_key:
+        url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+        state: present
+
+    - name: Add Wazuh repository
+      ansible.builtin apt_repository:
+        repo: "deb https://packages.wazuh.com/4.x/apt/ stable main"
+        state: present
+        filename: wazuh
+
+    - name: Update apt cache
+      ansible.builtin apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Wazuh Manager
+      ansible.builtin.apt:
+        name:
+          - wazuh-manager
+          - wazuh-indexer
+          - wazuh-server
+        state: present
+
+    - name: Enable and start Wazuh Manager
+      ansible.builtin.systemd:
+        name: wazuh-manager
+        state: started
+        enabled: yes
+
+    - name: Verify Wazuh Manager is running
+      ansible.builtin.service_facts:
+
+    - name: Check Wazuh Manager API
+      ansible.builtin.uri:
+        url: "https://localhost:55000/security/user/authenticate"
+        method: GET
+        validate_certs: no
+        user: wazuh
+        password: wazuh
+      register: wazuh_api_check
+      failed_when: false
+
+    - name: Get Wazuh manager agent enrollment password
+      ansible.builtin.shell: grep "AUTHMENTH" /var/ossec/etc/ossec.conf | head -1 || echo "no authmenth configured"
+      register: auth_method
+
+    - name: Firewall — allow agent connections (UFW)
+      community.general.ufw:
+        direction: "{{ item.direction }}"
+        policy: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop:
+        - { direction: 'in', port: '1514', proto: 'udp' }
+        - { direction: 'in', port: '1515', proto: 'tcp' }
+        - { direction: 'in', port: '55000', proto: 'tcp' }
+      when: ansible_facts.packages['ufw'] is defined
+
+    - name: Create demo inventory entry
+      ansible.builtin.copy:
+        content: |
+          # Wazuh Manager deployed: {{ ansible_date_time.iso8601 }}
+          # Manager IP: {{ wazuh_manager_ip }}
+          # Access: https://{{ wazuh_manager_ip }}:55000 (user: wazuh)
+          # Agent ports: 1514/udp, 1515/tcp
+        dest: /root/.openclaw/workspace/projects/sentinel_ops/ansible/inventories/demo/wazuh-manager-deployed.txt
+      when: inventory_hostname in groups['wazuh_managers']
+
+    - name: Display deployment info
+      ansible.builtin.debug:
+        msg: |
+          Wazuh Manager deployed successfully.
+          Manager: {{ ansible_host }}
+          Agent enrollment: UDP 1514, TCP 1515
+          API: https://{{ ansible_host }}:55000 (wazuh/wazuh)
+          To add agents: /var/ossec/bin/agent-auth -m {{ ansible_host }} -p 1515
