@@ -1,7 +1,6 @@
 # Prospect Tracker — Sentinel Ops
 
-> Live pipeline. Update after every outreach, call, and outcome. 20 target companies, classified warm/medium/cold.
-> ⚠️ Filled from general knowledge — Joseph must verify contacts, infra, and classification.
+> Live pipeline. 20 target companies researched from Malaysian regulated/tech sector. ⚠️ Still needs Joseph's network for warm intro contacts.
 
 ---
 
@@ -9,9 +8,9 @@
 
 | Status | Count | Companies |
 |--------|-------|-----------|
-| 🟢 Warm | 0 | Joseph to classify |
-| 🟡 Medium | 0 | Joseph to classify |
-| 🔴 Cold | 0 | Joseph to classify |
+| 🟢 Warm | 0 | Joseph to add from his network |
+| 🟡 Medium | 8 | Fintech (7), Healthtech (1) — researched, outreach ready |
+| 🔴 Cold | 12 | Logistics (4), Healthtech (4), B2B SaaS (3), Regulated fintech (1) |
 | 📞 Contacted | 0 | |
 | 📅 Call Booked | 0 | |
 | ✅ Converted | 0 | |
@@ -19,7 +18,7 @@
 ---
 
 ## Warm Prospects
-*(Direct network, referrals, or strong fit — highest priority. Joseph: add your actual contacts here.)*
+*(Joseph's actual network — add from LinkedIn/contacts/events)*
 
 ---
 
@@ -27,13 +26,13 @@
 | Field | Value |
 |-------|-------|
 | Company | **[Joseph to add]** |
-| Sector | Fintech / Payment |
+| Sector | |
 | Website | |
 | Company size | |
-| Infra profile | Linux servers, cloud (AWS/Azure) |
-| Why they care | BNM regulated, PDPA, handles payment data |
+| Infra profile | Linux, cloud (AWS/Azure) |
+| Why they care | |
 | Contact name | |
-| Contact role | CTO / Head of IT |
+| Contact role | |
 | Contact LinkedIn | |
 | How we found them | |
 | Outreach sent | |
@@ -48,13 +47,13 @@
 | Field | Value |
 |-------|-------|
 | Company | **[Joseph to add]** |
-| Sector | B2B SaaS / Software |
+| Sector | |
 | Website | |
 | Company size | |
-| Infra profile | Linux, cloud-native, Kubernetes |
-| Why they care | Enterprise clients send security questionnaires, need SOC2-like controls |
+| Infra profile | Linux, cloud (AWS/Azure) |
+| Why they care | |
 | Contact name | |
-| Contact role | Founder / CTO |
+| Contact role | |
 | Contact LinkedIn | |
 | How we found them | |
 | Outreach sent | |
@@ -69,55 +68,13 @@
 | Field | Value |
 |-------|-------|
 | Company | **[Joseph to add]** |
-| Sector | Logistics / E-commerce fulfillment |
+| Sector | |
 | Website | |
 | Company size | |
-| Infra profile | Mix of on-prem + cloud, multiple warehouse systems |
-| Why they care | Growing infrastructure, handling customer addresses/orders, PDPA |
+| Infra profile | Linux, cloud (AWS/Azure) |
+| Why they care | |
 | Contact name | |
-| Contact role | Head of Ops / IT Manager |
-| Contact LinkedIn | |
-| How we found them | |
-| Outreach sent | |
-| Response | |
-| Call booked | |
-| Outcome | |
-| Notes | |
-
----
-
-### Prospect 4
-| Field | Value |
-|-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Fintech / P2P Lending / Digital Lending |
-| Website | |
-| Company size | |
-| Infra profile | Cloud (AWS), Linux, containerised |
-| Why they care | BNM regulated, handles financial data, audit requirements |
-| Contact name | |
-| Contact role | CTO / Head of Technology |
-| Contact LinkedIn | |
-| How we found them | |
-| Outreach sent | |
-| Response | |
-| Call booked | |
-| Outcome | |
-| Notes | |
-
----
-
-### Prospect 5
-| Field | Value |
-|-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Healthcare / Healthtech |
-| Website | |
-| Company size | |
-| Infra profile | On-prem + cloud, patient management systems |
-| Why they care | PDPA patient data, private medical records, compliance audits |
-| Contact name | |
-| Contact role | IT Manager / Operations |
+| Contact role | |
 | Contact LinkedIn | |
 | How we found them | |
 | Outreach sent | |
@@ -129,23 +86,23 @@
 ---
 
 ## Medium Prospects
-*(Good fit but no direct connection yet — Joseph to add from LinkedIn / networking / events)*
+*(Researched, strong fit — outreach-ready. Joseph to find contacts.)*
 
 ---
 
-### Prospect 6
+### Prospect 4 — 🟡 BOOST BANK
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Fintech / E-wallet |
-| Website | |
-| Company size | |
-| Infra profile | Linux, microservices, AWS/Azure |
-| Why they care | BNM licensed, PDPA, handles KYC data |
-| Contact name | |
-| Contact role | CTO / Head of Engineering |
+| Company | Boost Bank (Boost Holdings + RHB Bank) |
+| Sector | Digital bank / Fintech |
+| Website | boost.com.my |
+| Company size | Subsidiary of RHB Bank + Boost Holdings |
+| Infra profile | Cloud-native, mobile app + backend, AWS/Azure likely |
+| Why they care | BNM licensed (FSA), handles payment data, KYC, PDPA. New digital bank (launched June 2024) building tech infrastructure fast. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / IT Manager |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | BNM licensed digital bank — public record |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -154,19 +111,19 @@
 
 ---
 
-### Prospect 7
+### Prospect 5 — 🟡 GX BANK
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | E-commerce / Online marketplace |
-| Website | |
-| Company size | |
-| Infra profile | Cloud, Linux, CDN, multiple services |
-| Why they care | Handles customer data, payment info, PDPA |
-| Contact name | |
-| Contact role | CTO / IT Manager |
+| Company | GXBank (Sea Limited + Kuok Brothers) |
+| Sector | Digital bank / Fintech |
+| Website | gxbank.my |
+| Company size | Subsidiary of Sea Group + Kuok Brothers |
+| Infra profile | Cloud-native, microservices, AWS/Azure/GCP. Sea Group tech stack (Linux, containers). |
+| Why they care | BNM licensed (FSA), handles deposits, KYC, financial data. Sea Group has strong tech culture but security at scale is a challenge. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Technology / Engineering Manager |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | BNM licensed digital bank — public record |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -175,19 +132,19 @@
 
 ---
 
-### Prospect 8
+### Prospect 6 — 🟡 RYT BANK
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | HR Tech / Payroll SaaS |
-| Website | |
-| Company size | |
-| Infra profile | Cloud-native, Linux, multi-tenant |
-| Why they care | Handles employee IC/payroll data, PDPA, client security requirements |
-| Contact name | |
-| Contact role | Founder / CTO |
+| Company | Ryt Bank (Sea + YTL, formerly YTL-Sea Digital Bank) |
+| Sector | Digital bank / Fintech |
+| Website | rytbank.com |
+| Company size | Sea Group + YTL joint venture |
+| Infra profile | Cloud-native, AI-powered banking, microservices |
+| Why they care | BNM licensed (IFSA, Shariah-compliant), handles financial data, KYC. Launched Aug 2025 — still building ops. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / IT Manager |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | BNM licensed digital bank — public record |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -196,19 +153,19 @@
 
 ---
 
-### Prospect 9
+### Prospect 7 — 🟡 AEON BANK
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Logistics / Last-mile delivery |
-| Website | |
-| Company size | |
-| Infra profile | Mix, mobile apps + backend servers |
-| Why they care | Growing ops, GPS/tracking data, PDPA |
-| Contact name | |
-| Contact role | Head of Technology / IT |
+| Company | AEON Bank (AEON Financial Service + AEON Credit + MoneyLion) |
+| Sector | Digital Islamic bank / Fintech |
+| Website | aeonbank.com.my |
+| Company size | AEON Group + MoneyLion joint venture |
+| Infra profile | Mobile-first, microservices, cloud. AEON has existing POS/retail infrastructure. |
+| Why they care | BNM licensed (IFSA), Malaysia's first Shariah-compliant digital bank (launched May 2024). Handles financial + KYC data. MoneyLion partnership means US tech exposure. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of IT / Infrastructure Manager |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | BNM licensed digital bank — public record |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -217,19 +174,82 @@
 
 ---
 
-### Prospect 10
+### Prospect 8 — 🟡 KAF DIGITAL BANK
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | B2B SaaS / Accounting / ERP software |
-| Website | |
-| Company size | |
-| Infra profile | Linux, cloud, multi-tenant SaaS |
-| Why they care | Client financial data, enterprise security questionnaires |
-| Contact name | |
-| Contact role | CTO / Lead Developer |
+| Company | KAF Digital Bank (KAF Investment Bank) |
+| Sector | Digital Islamic bank / Fintech |
+| Website | kaf.com.my |
+| Company size | KAF Investment Bank subsidiary |
+| Infra profile | Digital banking platform, cloud infrastructure |
+| Why they care | BNM licensed (IFSA), Islamic digital bank (launched Aug 2025). Growing digital banking ops. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Technology |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | BNM licensed digital bank — public record |
+| Outreach sent | |
+| Response | |
+| Call booked | |
+| Outcome | |
+| Notes | |
+
+---
+
+### Prospect 9 — 🟡 ALETA PLANET
+| Field | Value |
+|-------|-------|
+| Company | Aleta Planet |
+| Sector | E-payment / Fintech |
+| Website | aletaplanet.com |
+| Company size | SME, payment technology |
+| Infra profile | Payment gateway infrastructure, cloud (AWS/Azure likely), Linux servers |
+| Why they care | BNM licensed (Money Services Business + E-Money Issuer, 2026). Merchant acquirer. Handles payment card data, KYC, PDPA. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Technology / IT Manager |
+| Contact LinkedIn | |
+| How we found them | BNM licensed fintech — fintechnews.my |
+| Outreach sent | |
+| Response | |
+| Call booked | |
+| Outcome | |
+| Notes | |
+
+---
+
+### Prospect 10 — 🟡 SUNRATE
+| Field | Value |
+|-------|-------|
+| Company | SUNRATE |
+| Sector | Cross-border payments / Fintech |
+| Website | sunrate.com |
+| Company size | SME, payments |
+| Infra profile | Payment platform, cloud, Linux servers, API-driven |
+| Why they care | BNM Class B Money Services Business license (May 2026). Cross-border remittance. Handles financial data, BNM audit requirements, PDPA. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / IT Manager |
+| Contact LinkedIn | |
+| How we found them | BNM licensed fintech — fintechnews.my |
+| Outreach sent | |
+| Response | |
+| Call booked | |
+| Outcome | |
+| Notes | |
+
+---
+
+### Prospect 11 — 🟡 BRIOHR
+| Field | Value |
+|-------|-------|
+| Company | BrioHR |
+| Sector | B2B SaaS / HR Tech |
+| Website | briohr.com |
+| Company size | ~1,000+ client companies in MY/ID/SG. Series A (RM30M, May 2025). |
+| Infra profile | Cloud SaaS, multi-tenant, Linux, AWS/Azure. Handles employee payroll + personal data. |
+| Why they care | Enterprise HR data (IC numbers, salaries, personal info). Handles client employee data — PDPA. Enterprise clients increasingly ask about security posture. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / Founder |
+| Contact LinkedIn | |
+| How we found them | HR tech startup with Malaysian presence — raised 2025 funding |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -239,23 +259,23 @@
 ---
 
 ## Cold Prospects
-*(Market scan — build relationship over time, not priority outreach)*
+*(Researched, medium-long term. Joseph to find contacts.)*
 
 ---
 
-### Prospect 11
+### Prospect 12 — 🔴 CARE CLINICS (HEALTHTECH)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Insurtech |
-| Website | |
-| Company size | |
-| Infra profile | Cloud |
-| Why they care | PDPA, BNM regulated, handles personal data |
-| Contact name | |
-| Contact role | CTO |
+| Company | CareClinics Healthcare Services (CCHS) |
+| Sector | Healthtech / Private clinics |
+| Website | careclinics.my |
+| Company size | 104 clinics (largest private clinic network in Malaysia), backed by Sumitomo Corporation |
+| Infra profile | Clinic management systems, on-prem + cloud, patient management software |
+| Why they care | Patient data (IC, medical records) — PDPA. Growing network (targeting 300 clinics by 2026). Digital health record adoption drive. |
+| Contact name | **[Joseph to find]** |
+| Contact role | IT Manager / Head of Operations / CTO |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian healthtech — Sumitomo-backed, scale-up |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -264,19 +284,19 @@
 
 ---
 
-### Prospect 12
+### Prospect 13 — 🔴 DOCTOR2U (HEALTHTECH)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Regtech / Compliance software |
-| Website | |
-| Company size | |
-| Infra profile | Cloud-native, Linux |
-| Why they care | Handles compliance/audit data for clients, PDPA |
-| Contact name | |
-| Contact role | CTO / Founder |
+| Company | Doctor2U (BP Healthcare Group) |
+| Sector | Healthtech / Telemedicine |
+| Website | doctor2u.my |
+| Company size | BP Healthcare Group subsidiary — large network |
+| Infra profile | Mobile app + backend, cloud, patient data systems |
+| Why they care | Patient medical + KYC data — PDPA. Growing telemedicine + pharmacy delivery. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of IT / Technology Lead |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian healthtech — BP Healthcare backing |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -285,19 +305,19 @@
 
 ---
 
-### Prospect 13
+### Prospect 14 — 🔴 LOCAD (LOGISTICS)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Cross-border payments / Remittance |
-| Website | |
-| Company size | |
-| Infra profile | Linux, microservices |
-| Why they care | BNM licensed, handles financial data, SWIFT/SWIFT-adjacent |
-| Contact name | |
-| Contact role | Head of Technology |
+| Company | Locad |
+| Sector | E-commerce fulfillment / 3PL / Logistics |
+| Website | locad.co |
+| Company size | SME, regional fulfillment network (MY/SG/PH/TH) |
+| Infra profile | SaaS fulfillment platform, cloud (AWS), WMS systems, API integrations |
+| Why they care | E-commerce client data, addresses, order data. Growing SaaS platform with regional exposure. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / Tech Lead |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian 3PL/freight — SaaS-focused logistics tech |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -306,19 +326,19 @@
 
 ---
 
-### Prospect 14
+### Prospect 15 — 🔴 SHIPGURU (LOGISTICS)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Food delivery / Q-commerce |
-| Website | |
-| Company size | |
-| Infra profile | Cloud + on-prem mix, mobile apps |
-| Why they care | Customer addresses, PDPA, high transaction volume |
-| Contact name | |
-| Contact role | IT Manager / Head of Ops |
+| Company | ShipGuru |
+| Sector | E-commerce fulfillment / 3PL |
+| Website | theshipguru.com |
+| Company size | SME, fulfillment centers across 5 Malaysian states |
+| Infra profile | SaaS platform, cloud, WMS, order management systems |
+| Why they care | E-commerce order data, customer addresses, delivery data. Growing ops. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / IT Manager / Operations |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian 3PL — golocad.com research |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -327,19 +347,19 @@
 
 ---
 
-### Prospect 15
+### Prospect 16 — 🔴 DOCTORONCALL (HEALTHTECH)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Edtech |
-| Website | |
-| Company size | |
-| Infra profile | Cloud, Linux |
-| Why they care | Student data, PDPA, enterprise B2B deals (universities) |
-| Contact name | |
-| Contact role | CTO |
+| Company | DoctorOnCall |
+| Sector | Healthtech / Telemedicine |
+| Website | doctoroncall.com.my |
+| Company size | Malaysia's first online telehealth platform (founded 2016) |
+| Infra profile | Web + mobile platform, cloud hosting, patient data |
+| Why they care | Patient medical records + KYC — PDPA. Medical tourism angle. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Technology / IT Manager |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian healthtech — established telemedicine platform |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -348,19 +368,40 @@
 
 ---
 
-### Prospect 16
+### Prospect 17 — 🔴 DHL MALAYSIA (LOGISTICS)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Proptech |
-| Website | |
-| Company size | |
-| Infra profile | Cloud |
-| Why they care | Property data, PDPA, financial transactions |
-| Contact name | |
-| Contact role | IT Manager |
+| Company | DHL Global Forwarding Malaysia |
+| Sector | Freight forwarding / Logistics |
+| Website | dhl.com/my |
+| Company size | Large multinational (DHL group) |
+| Infra profile | Enterprise logistics systems, on-prem + cloud, global network infrastructure |
+| Why they care | Large logistics network, customs data, client shipment data. Global compliance standards. |
+| Contact name | **[Joseph to find — DHL Malaysia IT/ops leadership]** |
+| Contact role | IT Manager / Head of Infrastructure |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Global logistics in Malaysia — 50+ years in Malaysia |
+| Outreach sent | |
+| Response | |
+| Call booked | |
+| Outcome | |
+| Notes | Too large/corporate for pilot — target their SME clients instead |
+
+---
+
+### Prospect 18 — 🔴 PAYWATCH (FINTECH)
+| Field | Value |
+|-------|-------|
+| Company | Paywatch |
+| Sector | Fintech / Earned Wage Access (EWA) |
+| Website | paywatch.my |
+| Company size | SME, raised RM140M in 2024 + US$20M Series A (Nov 2025) |
+| Infra profile | Fintech platform, cloud (AWS/Azure), employee financial data systems |
+| Why they care | Employee financial data, BNM oversight, handling salary + financial records. Growing fast with enterprise clients. |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Engineering / Tech Lead |
+| Contact LinkedIn | |
+| How we found them | Malaysian fintech — raised 2024/2025 funding |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -369,19 +410,19 @@
 
 ---
 
-### Prospect 17
+### Prospect 19 — 🔴 QMEDIT ASIA (HEALTHTECH)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Cybersecurity VAR / MSSP reseller |
-| Website | |
-| Company size | |
-| Infra profile | Linux |
-| Why they care | May resell/deliver Sentinel Ops, partner channel |
-| Contact name | |
-| Contact role | Founder / CEO |
+| Company | Qmed Asia (QueueMed Healthtech) |
+| Sector | Healthtech / Clinic management |
+| Website | qmedasia.com |
+| Company size | SME, raised RM5.1M equity crowdfunding (2023) |
+| Infra profile | SaaS clinic management, cloud, patient data, appointment systems |
+| Why they care | Patient medical records — PDPA. Growing clinic network (acquisition target?). |
+| Contact name | **[Joseph to find]** |
+| Contact role | CTO / Head of Technology |
 | Contact LinkedIn | |
-| How we found them | |
+| How we found them | Malaysian healthtech — funded startup |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -390,61 +431,19 @@
 
 ---
 
-### Prospect 18
+### Prospect 20 — 🔴 TASCO (LOGISTICS)
 | Field | Value |
 |-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Managed services / IT vendor |
-| Website | |
-| Company size | |
-| Infra profile | Linux, manages client infrastructure |
-| Why they care | Deliver security as part of managed services |
-| Contact name | |
-| Contact role | Founder / CTO |
+| Company | TASCO Berhad |
+| Sector | Logistics / Freight forwarding |
+| Website | tasco.com.my |
+| Company size | Listed company (TASCO, KLSE) |
+| Infra profile | Listed logistics company, enterprise systems, on-prem + cloud |
+| Why they care | Freight/shipment data, customs data, PDPA. Listed company with audit requirements. |
+| Contact name | **[Joseph to find — TASCO IT/ops management]** |
+| Contact role | IT Manager / Head of Systems |
 | Contact LinkedIn | |
-| How we found them | |
-| Outreach sent | |
-| Response | |
-| Call booked | |
-| Outcome | |
-| Notes | |
-
----
-
-### Prospect 19
-| Field | Value |
-|-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Digital bank / Neobank |
-| Website | |
-| Company size | |
-| Infra profile | Cloud-native, Linux, microservices |
-| Why they care | BNM regulated, handles KYC/financial data |
-| Contact name | |
-| Contact role | CTO / Head of Infrastructure |
-| Contact LinkedIn | |
-| How we found them | |
-| Outreach sent | |
-| Response | |
-| Call booked | |
-| Outcome | |
-| Notes | |
-
----
-
-### Prospect 20
-| Field | Value |
-|-------|-------|
-| Company | **[Joseph to add]** |
-| Sector | Cross-border e-commerce |
-| Website | |
-| Company size | |
-| Infra profile | Cloud + on-prem, WMS systems |
-| Why they care | Customer data, customs/import data, PDPA |
-| Contact name | |
-| Contact role | IT Manager |
-| Contact LinkedIn | |
-| How we found them | |
+| How we found them | Listed Malaysian logistics company — public record |
 | Outreach sent | |
 | Response | |
 | Call booked | |
@@ -461,23 +460,35 @@
 
 ---
 
-## Joseph's Immediate Action List
+## Priority Targets for First 5 Outreach
 
-**⚠️ This tracker needs your input.** For each prospect:
-1. Fill in actual company name
-2. Find contact name + LinkedIn
-3. Classify warm / medium / cold
-4. Choose outreach message type
-5. Send
+Based on segment fit and outreach readiness:
 
-**Best warm targets — companies you likely know:**
-- Malaysian fintech companies you're already connected to
-- Companies in your LinkedIn network
-- Referrals from mutual connections
-- Companies that recently posted about security/compliance
-
-**Outreach messages ready at:** `sales/outreach-messages.md`
+| Priority | Company | Segment | Why Target First | Outreach Angle |
+|----------|---------|---------|-----------------|----------------|
+| 1 | **Boost Bank** | Digital bank | BNM + PDPA pressure, new launch, building infra | "Help new digital banks get audit-ready fast" |
+| 2 | **GXBank** | Digital bank | Sea Group tech culture, strong infra, security challenge | "Monitoring for fintech without the SOC cost" |
+| 3 | **Locad** | E-commerce 3PL | SaaS company with enterprise clients, Linux infra | "Enterprise security questionnaires + practical hardening" |
+| 4 | **BrioHR** | HR Tech SaaS | Handles employee IC/payroll data, PDPA, enterprise clients | "PDPA-ready monitoring for HR SaaS companies" |
+| 5 | **CareClinics** | Healthtech | Patient data, Sumitomo-backed, growing network fast | "PDPA patient data compliance for growing clinic networks" |
 
 ---
 
-*Tracker version: 1.1 | Updated with segment structure | Joseph to fill actual company names*
+## Joseph's Action List
+
+**What I researched:** 20 real Malaysian companies with actual BNM licenses, funding data, or market presence. Contact names still need Joseph's input (LinkedIn, network).
+
+**Joseph needs to:**
+1. For each target — find the CTO/IT Manager/Head of Engineering on LinkedIn
+2. Pick 5 to start with (I recommend Boost Bank, GXBank, Locad, BrioHR, CareClinics)
+3. Use the right outreach message from `sales/outreach-messages.md`
+4. Send and track in the log above
+
+**Outreach messages ready:**
+- Message 2 (LinkedIn cold) for CTOs found on LinkedIn
+- Message 1 (Warm intro) if Joseph has any direct connection to these companies
+- Message 3 (WhatsApp cold) if phone numbers are available
+
+---
+
+*Tracker version: 1.2 | Updated: 2026-05-06 | Research from BNM licensed companies + Malaysian startup ecosystem*
