@@ -4,7 +4,7 @@ services:
     container_name: sentinel-ops-landing
     restart: unless-stopped
     ports:
-      - "8092:80"
+      - "8075:80"
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html:ro
     labels:
