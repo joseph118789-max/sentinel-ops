@@ -47,13 +47,21 @@ scp site/index.html site/docker-compose.yml root@187.127.97.175:/var/www/sentine
 
 ---
 
-## 4. Start the container
+## 4. Check port and start container
 
 ```bash
 ssh root@187.127.97.175
+ss -ltnp | grep :8080
+```
+
+- If 8080 is free → use `8080:80` in docker-compose.yml
+- If 8080 is busy → use `8092:80` in docker-compose.yml and update nginx `proxy_pass` accordingly
+
+```bash
+mkdir -p /var/www/sentinel-ops
 cd /var/www/sentinel-ops
 docker compose up -d
-curl http://127.0.0.1:8080
+curl http://127.0.0.1:<port>   # verify container is serving before touching nginx
 ```
 
 Expected: HTML of the landing page returns, container stays up.
