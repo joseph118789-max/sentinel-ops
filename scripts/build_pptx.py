@@ -1,461 +1,332 @@
 #!/usr/bin/env python3
-"""Build Sentinel Ops 9-slide sales deck."""
+"""Build Sentinel Ops — Clean 9-slide deck (5-second readable per slide)."""
 
 from pptx import Presentation
-from pptx.util import Inches, Pt, Emu
+from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
-from pptx.util import Cm
-import copy
 
-# ── Colours ──────────────────────────────────────────────────────────────────
-NAVY    = RGBColor(0x0D, 0x2B, 0x45)   # deep navy
-TEAL    = RGBColor(0x00, 0x9B, 0x8A)   # accent teal
-WHITE   = RGBColor(0xFF, 0xFF, 0xFF)
-LIGHT   = RGBColor(0xF5, 0xF7, 0xFA)   # slide background tint
-DARK_TEXT = RGBColor(0x1A, 0x1A, 0x2E)
-GREY_TEXT = RGBColor(0x5A, 0x5A, 0x7A)
-ORANGE  = RGBColor(0xF4, 0x7B, 0x00)   # callout orange
+# ── Dark theme palette ────────────────────────────────────────────────────────
+BG       = RGBColor(0x0B, 0x12, 0x20)
+SURFACE  = RGBColor(0x14, 0x1E, 0x2E)
+TEXT     = RGBColor(0xF8, 0xFA, 0xFC)
+MUTED    = RGBColor(0x94, 0xA3, 0xB8)
+ACCENT   = RGBColor(0x22, 0xC5, 0x5E)   # green
+ACCENT2  = RGBColor(0x38, 0xBD, 0xF8)   # blue
+TEAL     = RGBColor(0x00, 0xB8, 0x8A)
+WHITE    = RGBColor(0xFF, 0xFF, 0xFF)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
 prs = Presentation()
 prs.slide_width  = Inches(13.33)
 prs.slide_height = Inches(7.5)
+BLANK = prs.slide_layouts[6]
 
-BLANK = prs.slide_layouts[6]  # truly blank layout
+# ── Helpers ───────────────────────────────────────────────────────────────────
+def bg(slide): fill = slide.background.fill; fill.solid(); fill.fore_color.rgb = BG
 
-def add_bg(slide, color=LIGHT):
-    """Solid coloured background."""
-    fill = slide.background.fill
-    fill.solid()
-    fill.fore_color.rgb = color
+def tx(slide, s, l, t, w, h, sz=18, bold=False, col=TEXT, ali=PP_ALIGN.LEFT, italic=False):
+    b = slide.shapes.add_textbox(l, t, w, h)
+    b.word_wrap = True
+    tf = b.text_frame; tf.word_wrap = True
+    p = tf.paragraphs[0]; p.alignment = ali
+    r = p.add_run(); r.text = s
+    r.font.size = Pt(sz); r.font.bold = bold; r.font.italic = italic
+    r.font.color.rgb = col
 
-def textbox(slide, text, left, top, width, height,
-            size=18, bold=False, color=DARK_TEXT, align=PP_ALIGN.LEFT,
-            italic=False, wrap=True):
-    txBox = slide.shapes.add_textbox(left, top, width, height)
-    txBox.word_wrap = wrap
-    tf = txBox.text_frame
-    tf.word_wrap = wrap
-    p = tf.paragraphs[0]
-    p.alignment = align
-    run = p.add_run()
-    run.text = text
-    run.font.size = Pt(size)
-    run.font.bold = bold
-    run.font.italic = italic
-    run.font.color.rgb = color
-    return txBox
-
-def bullet_box(slide, items, left, top, width, height,
-               size=16, color=DARK_TEXT, spacing_before=6):
-    txBox = slide.shapes.add_textbox(left, top, width, height)
-    txBox.word_wrap = True
-    tf = txBox.text_frame
-    tf.word_wrap = True
+def bul(slide, items, l, t, w, h, sz=15, col=TEXT, sp=8):
+    b = slide.shapes.add_textbox(l, t, w, h)
+    b.word_wrap = True; tf = b.text_frame; tf.word_wrap = True
     first = True
-    for item in items:
-        if first:
-            p = tf.paragraphs[0]
-            first = False
-        else:
-            p = tf.add_paragraph()
-        p.space_before = Pt(spacing_before)
-        run = p.add_run()
-        run.text = f"• {item}"
-        run.font.size = Pt(size)
-        run.font.color.rgb = color
-    return txBox
+    for i in items:
+        p = tf.paragraphs[0] if first else tf.add_paragraph(); first = False
+        p.space_before = Pt(sp)
+        r = p.add_run(); r.text = f"• {i}"
+        r.font.size = Pt(sz); r.font.color.rgb = col
 
-def section_header(slide, title, subtitle=None):
-    """Full-width navy top bar."""
-    bar = slide.shapes.add_shape(1, 0, 0, prs.slide_width, Inches(1.1))
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = NAVY
-    bar.line.fill.background()
+def pill(slide, s, l, t, w, h, bg=ACCENT, sz=14):
+    sh = slide.shapes.add_shape(1, l, t, w, h)
+    sh.fill.solid(); sh.fill.fore_color.rgb = bg; sh.line.fill.background()
+    tf = sh.text_frame; p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    r = p.add_run(); r.text = s; r.font.size = Pt(sz); r.font.bold = True; r.font.color.rgb = WHITE
 
-    textbox(slide, title, Inches(0.5), Inches(0.2), Inches(12), Inches(0.7),
-            size=28, bold=True, color=WHITE, align=PP_ALIGN.LEFT)
-    if subtitle:
-        textbox(slide, subtitle, Inches(0.5), Inches(0.72), Inches(12), Inches(0.35),
-                size=14, bold=False, color=RGBColor(0xA0,0xC0,0xD0), align=PP_ALIGN.LEFT)
+def divider(slide, l, t, w, col=ACCENT, pt=Pt(3)):
+    sh = slide.shapes.add_shape(1, l, t, w, pt)
+    sh.fill.solid(); sh.fill.fore_color.rgb = col; sh.line.fill.background()
 
-def accent_bar(slide, top_offset=Inches(1.3)):
-    """Thin teal accent bar under header."""
-    bar = slide.shapes.add_shape(1, 0, top_offset, prs.slide_width, Pt(4))
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = TEAL
-    bar.line.fill.background()
+def slide_title(slide, main, sub=None):
+    tx(slide, main, Inches(0.6), Inches(0.28), Inches(12), Inches(0.8),
+       sz=32, bold=True, col=TEXT)
+    if sub:
+        tx(slide, sub, Inches(0.6), Inches(0.95), Inches(12), Inches(0.4),
+           sz=14, col=MUTED)
+    divider(slide, Inches(0.6), Inches(1.32), Inches(12.1), col=ACCENT)
 
-def callout_box(slide, text, left, top, width, height, size=14):
-    box = slide.shapes.add_shape(1, left, top, width, height)
-    box.fill.solid()
-    box.fill.fore_color.rgb = RGBColor(0xE8, 0xF4, 0xF2)
-    box.line.color.rgb = TEAL
-    box.line.width = Pt(1.5)
-    tf = box.text_frame
-    tf.word_wrap = True
-    p = tf.paragraphs[0]
-    p.alignment = PP_ALIGN.LEFT
-    run = p.add_run()
-    run.text = text
-    run.font.size = Pt(size)
-    run.font.color.rgb = NAVY
-    run.font.bold = True
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 1 — TITLE
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+tx(s, "Sentinel Ops",   Inches(0.7), Inches(1.4),  Inches(12), Inches(1.3), sz=72, bold=True, col=WHITE)
+tx(s, "Lean Managed Cybersecurity for Malaysian SMEs",  Inches(0.7), Inches(2.8), Inches(12), Inches(0.6), sz=26, col=ACCENT)
+tx(s, "Monitoring  •  Hardening  •  Audit-Ready Reporting", Inches(0.7), Inches(3.45), Inches(12), Inches(0.45), sz=16, col=MUTED)
+tx(s, "without building a full SOC.", Inches(0.7), Inches(3.9), Inches(12), Inches(0.45), sz=16, col=MUTED)
+divider(s, Inches(0.7), Inches(4.5), Inches(3.5), col=ACCENT2)
+tx(s, "[Your Name]",    Inches(0.7), Inches(4.8),  Inches(12), Inches(0.5), sz=20, bold=True, col=WHITE)
+tx(s, "Founder / Operator, Sentinel Ops", Inches(0.7), Inches(5.25), Inches(12), Inches(0.4), sz=14, col=MUTED)
+tx(s, "[email]   [WhatsApp]   [LinkedIn]", Inches(0.7), Inches(5.65), Inches(12), Inches(0.35), sz=13, col=RGBColor(0x60,0x80,0x90))
 
-def four_box_row(slide, items, row_top, box_w, box_h, gap=Inches(0.3)):
-    """4 boxes across the slide."""
-    total_w = 4 * box_w + 3 * gap
-    start_x = (prs.slide_width - total_w) / 2
-    colours = [NAVY, TEAL, RGBColor(0x1A,0x6B,0x5E), RGBColor(0x0A,0x4A,0x5A)]
-    for i, (title, desc) in enumerate(items):
-        x = start_x + i * (box_w + gap)
-        box = slide.shapes.add_shape(1, x, row_top, box_w, box_h)
-        box.fill.solid()
-        box.fill.fore_color.rgb = colours[i]
-        box.line.fill.background()
-        tf = box.text_frame
-        tf.word_wrap = True
-        # Title
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.CENTER
-        run = p.add_run()
-        run.text = title
-        run.font.size = Pt(14)
-        run.font.bold = True
-        run.font.color.rgb = WHITE
-        # Desc
-        p2 = tf.add_paragraph()
-        p2.alignment = PP_ALIGN.CENTER
-        run2 = p2.add_run()
-        run2.text = desc
-        run2.font.size = Pt(11)
-        run2.font.color.rgb = RGBColor(0xD0,0xE8,0xF0)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 2 — THE PROBLEM  (5-second: noise, no time, expensive SOC, compliance)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "The Problem", "Why growing companies struggle with cybersecurity")
 
-# ── SLIDE 1 — Title ───────────────────────────────────────────────────────────
-s1 = prs.slides.add_slide(BLANK)
-add_bg(s1, NAVY)
-
-# Big title
-textbox(s1, "Sentinel Ops",
-        Inches(0.8), Inches(1.5), Inches(11.5), Inches(1.2),
-        size=60, bold=True, color=WHITE, align=PP_ALIGN.LEFT)
-
-# Tagline
-textbox(s1, "Lean Managed Cybersecurity for Malaysian SMEs & Growing Teams",
-        Inches(0.8), Inches(2.7), Inches(10), Inches(0.6),
-        size=22, bold=False, color=TEAL, align=PP_ALIGN.LEFT)
-
-# Sub-tagline
-textbox(s1, "Monitoring, Hardening, and Audit-Ready Reporting",
-        Inches(0.8), Inches(3.4), Inches(10), Inches(0.5),
-        size=18, bold=False, color=RGBColor(0xA0,0xC0,0xD0), align=PP_ALIGN.LEFT)
-textbox(s1, "without building a full SOC.",
-        Inches(0.8), Inches(3.85), Inches(10), Inches(0.5),
-        size=18, bold=False, color=RGBColor(0xA0,0xC0,0xD0), align=PP_ALIGN.LEFT)
-
-# Teal divider
-bar = s1.shapes.add_shape(1, Inches(0.8), Inches(4.55), Inches(3), Pt(4))
-bar.fill.solid()
-bar.fill.fore_color.rgb = TEAL
-bar.line.fill.background()
-
-# Footer contact
-textbox(s1, "[Your Name]  |  Founder / Operator",
-        Inches(0.8), Inches(4.8), Inches(8), Inches(0.4),
-        size=13, bold=False, color=RGBColor(0x80,0xA0,0xB0), align=PP_ALIGN.LEFT)
-textbox(s1, "[email@domain.com]  |  [WhatsApp]  |  [LinkedIn]",
-        Inches(0.8), Inches(5.15), Inches(8), Inches(0.4),
-        size=12, bold=False, color=RGBColor(0x60,0x80,0x90), align=PP_ALIGN.LEFT)
-
-# ── SLIDE 2 — The Problem ────────────────────────────────────────────────────
-s2 = prs.slides.add_slide(BLANK)
-add_bg(s2, LIGHT)
-section_header(s2, "The Problem", "Why growing companies struggle with cybersecurity operations")
-accent_bar(s2)
-
-items = [
-    "Security tools generate noise, not clarity",
-    "Small IT teams don't have time to triage alerts",
-    "Hardening and patching hygiene is inconsistent",
-    "Compliance pressure is rising: PDPA, customer questionnaires, audit expectations",
-    "Hiring a full SOC team is expensive and unrealistic for many SMEs",
+pills_data = [
+    ("Noise, not signal",      "Security tools fire alerts.\nNobody triages them.",     ACCENT),
+    ("No time",                 "Small IT teams are fighting\nfires, not security.",       ACCENT2),
+    ("Inconsistent hygiene",    "Hardening falls off the\npriority list.",               TEAL),
+    ("Compliance rising",        "PDPA + enterprise questionnaires\n= real pressure.",     RGBColor(0xA7,0x8A,0xF5)),
 ]
-bullet_box(s2, items,
-           Inches(0.7), Inches(1.5), Inches(8.5), Inches(4),
-           size=17, color=DARK_TEXT, spacing_before=10)
+pw = Inches(2.8); pg = Inches(0.38)
+total = 4*pw + 3*pg; sx = (prs.slide_width - total) / 2
+for i, (title, desc, col) in enumerate(pills_data):
+    x = sx + i*(pw+pg)
+    pill(s, title, x, Inches(1.65), pw, Inches(0.45), bg=col, sz=12)
+    tx(s, desc, x, Inches(2.2), pw, Inches(1.4), sz=14, col=TEXT)
 
-callout_box(s2,
-            "Most companies know they need better security operations — "
-            "but not a heavyweight security program.",
-            Inches(9.6), Inches(1.5), Inches(3.3), Inches(2.5), size=13)
+# Bottom callout — no paragraphs
+box = s.shapes.add_shape(1, Inches(0.6), Inches(5.9), Inches(12.1), Inches(1.2))
+box.fill.solid(); box.fill.fore_color.rgb = SURFACE; box.line.color.rgb = ACCENT; box.line.width = Pt(2)
+tx(s, "Most companies need better security operations —", Inches(0.9), Inches(6.0), Inches(11.5), Inches(0.45), sz=16, bold=True, col=WHITE)
+tx(s, "but not the cost and complexity of a full SOC.",   Inches(0.9), Inches(6.4), Inches(11.5), Inches(0.45), sz=16, bold=True, col=ACCENT)
 
-# ── SLIDE 3 — Our Answer ──────────────────────────────────────────────────────
-s3 = prs.slides.add_slide(BLANK)
-add_bg(s3, LIGHT)
-section_header(s3, "What Sentinel Ops Does", "The lean managed security layer for critical systems")
-accent_bar(s3)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 3 — OUR ANSWER  (5-second: what we do in 5 bullet-pills)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "What Sentinel Ops Does", "The lean managed security layer for critical systems")
 
-items = [
-    "Managed monitoring for Linux / cloud environments",
-    "Alert triage — reduce noise, surface real issues",
-    "Baseline hardening using practical CIS-aligned controls",
-    "Monthly management-ready reporting",
-    "Limited-scope pilots designed to prove value fast",
+offers = [
+    ("Managed Monitoring",    "24/7 coverage for Linux / cloud. Real alerts, not noise."),
+    ("Alert Triage",           "We filter noise and surface what needs attention."),
+    ("Baseline Hardening",     "Practical CIS-aligned controls on approved systems."),
+    ("Monthly Reporting",      "Management-ready — findings, risk trends, next steps."),
+    ("Fast Pilot",             "30-day limited-scope pilot. Prove value, no overcommitment."),
 ]
-bullet_box(s3, items,
-           Inches(0.7), Inches(1.5), Inches(8.5), Inches(3.8),
-           size=17, color=DARK_TEXT, spacing_before=10)
+for i, (title, desc) in enumerate(offers):
+    y = Inches(1.55) + i*Inches(0.98)
+    pill(s, title, Inches(0.6), y, Inches(2.4), Inches(0.4), bg=ACCENT, sz=12)
+    tx(s, desc, Inches(3.15), y+Inches(0.05), Inches(9.7), Inches(0.4), sz=14, col=TEXT)
 
-callout_box(s3,
-            "Enterprise-style security visibility and hardening — "
-            "without hiring a SOC.",
-            Inches(0.7), Inches(5.5), Inches(11.9), Inches(1.1), size=16)
+box = s.shapes.add_shape(1, Inches(0.6), Inches(6.55), Inches(12.1), Inches(0.65))
+box.fill.solid(); box.fill.fore_color.rgb = RGBColor(0x0D,0x28,0x1A); box.line.color.rgb = ACCENT; box.line.width = Pt(1.5)
+tx(s, "Enterprise security visibility and hardening — without hiring a SOC.",
+   Inches(0.85), Inches(6.62), Inches(11.5), Inches(0.5), sz=15, bold=True, col=ACCENT)
 
-# ── SLIDE 4 — Who It's For ───────────────────────────────────────────────────
-s4 = prs.slides.add_slide(BLANK)
-add_bg(s4, LIGHT)
-section_header(s4, "Who It's For", "Ideal customer profile")
-accent_bar(s4)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 4 — WHO IT'S FOR  (5-second: SME SaaS healthtech logistics with lean IT)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "Who It's For", "We target deliberately — where security pressure is real and teams are lean")
 
-# Best fit — left
-textbox(s4, "✓  Best fit",
-           Inches(0.7), Inches(1.45), Inches(5.5), Inches(0.4),
-           size=15, bold=True, color=TEAL, align=PP_ALIGN.LEFT)
-fit_items = [
+# ✓ Best fit
+lbox = s.shapes.add_shape(1, Inches(0.6), Inches(1.55), Inches(5.9), Inches(4.8))
+lbox.fill.solid(); lbox.fill.fore_color.rgb = SURFACE; lbox.line.color.rgb = ACCENT; lbox.line.width = Pt(2)
+tx(s, "✓  Best fit", Inches(0.85), Inches(1.68), Inches(5.4), Inches(0.45), sz=17, bold=True, col=ACCENT)
+bul(s, [
     "Malaysian SMEs and mid-sized companies",
-    "SaaS, logistics-tech, healthtech, fintech-adjacent businesses",
-    "Teams with Linux/cloud workloads",
-    "Companies facing enterprise security questionnaires or PDPA compliance",
-    "Businesses with lean IT teams and no internal SOC",
+    "SaaS, logistics-tech, healthtech, fintech-adjacent",
+    "Linux / cloud workloads (AWS, Azure, on-prem)",
+    "PDPA compliance or enterprise security questionnaires",
+    "Lean IT teams — no internal SOC",
+], Inches(0.85), Inches(2.18), Inches(5.4), Inches(3.8), sz=14, col=TEXT, sp=8)
+
+# ✗ Not ideal
+rbox = s.shapes.add_shape(1, Inches(6.8), Inches(1.55), Inches(5.9), Inches(4.8))
+rbox.fill.solid(); rbox.fill.fore_color.rgb = SURFACE; rbox.line.color.rgb = RGBColor(0x7F, 0x1D, 0x1D); rbox.line.width = Pt(2)
+tx(s, "✗  Not ideal initially", Inches(7.05), Inches(1.68), Inches(5.4), Inches(0.45), sz=17, bold=True, col=RGBColor(0xFC,0x81,0x81))
+bul(s, [
+    "Very large enterprises needing broad coverage",
+    "Banks or regulated financial institutions requiring formal SOC",
+    "Expecting extensive custom consulting from day one",
+], Inches(7.05), Inches(2.18), Inches(5.4), Inches(2.8), sz=14, col=MUTED, sp=8)
+
+tx(s, "We win where security pressure is real but security ops are still lean.",
+   Inches(0.6), Inches(6.55), Inches(12.1), Inches(0.55), sz=13, italic=True, col=MUTED)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 5 — HOW IT WORKS  (5-second: 4 steps, small scope, clear signal)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "How It Works", "Small scope. Clear signal. Practical output.")
+
+steps = [
+    ("01", "Onboard",  "Deploy monitoring on agreed critical systems. Define scope."),
+    ("02", "Detect",   "Filter noise. Prioritize real issues. Surface what matters."),
+    ("03", "Harden",   "Apply practical CIS-aligned controls on approved systems."),
+    ("04", "Report",   "Clear findings, risk trends, recommended next steps monthly."),
 ]
-bullet_box(s4, fit_items,
-           Inches(0.7), Inches(1.9), Inches(5.8), Inches(3.8),
-           size=14, color=DARK_TEXT, spacing_before=8)
+sw = Inches(2.75); sg = Inches(0.38)
+total = 4*sw + 3*sg; sx = (prs.slide_width - total) / 2
+cols  = [ACCENT, ACCENT2, TEAL, RGBColor(0xA7,0x8A,0xF5)]
+for i, (num, title, desc) in enumerate(steps):
+    x = sx + i*(sw+sg)
+    pill(s, num,   x, Inches(1.65), sw, Inches(0.55), bg=cols[i], sz=22)
+    c = s.shapes.add_shape(1, x, Inches(2.3), sw, Inches(3.4))
+    c.fill.solid(); c.fill.fore_color.rgb = SURFACE; c.line.color.rgb = cols[i]; c.line.width = Pt(1.5)
+    tx(s, title, x+Inches(0.15), Inches(2.45), sw-Inches(0.3), Inches(0.5),
+       sz=18, bold=True, col=cols[i], ali=PP_ALIGN.CENTER)
+    tx(s, desc, x+Inches(0.15), Inches(3.05), sw-Inches(0.3), Inches(2.4),
+       sz=13, col=TEXT)
 
-# Not ideal — right
-textbox(s4, "✗  Not ideal initially",
-           Inches(7.0), Inches(1.45), Inches(5.5), Inches(0.4),
-           size=15, bold=True, color=RGBColor(0xB0,0x30,0x30), align=PP_ALIGN.LEFT)
-not_items = [
-    "Very large enterprises",
-    "Banks needing full formal SOC coverage",
-    "Clients expecting broad custom consulting from day one",
-]
-bullet_box(s4, not_items,
-           Inches(7.0), Inches(1.9), Inches(5.8), Inches(3.0),
-           size=14, color=GREY_TEXT, spacing_before=8)
+tx(s, "Small scope. Clear signal. Practical improvements. Useful reporting.",
+   Inches(0.6), Inches(6.15), Inches(12.1), Inches(0.5), sz=13, italic=True, col=MUTED, ali=PP_ALIGN.CENTER)
 
-# Footer note
-textbox(s4, "We are intentionally focused. Early on, we win where security pressure is real but internal security operations are still lean.",
-        Inches(0.7), Inches(5.8), Inches(11.9), Inches(0.8),
-        size=12, italic=True, color=GREY_TEXT, align=PP_ALIGN.LEFT)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 6 — PROOF  (5-second: real numbers, real findings)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "What We've Proven", "Real findings from our internal MVP demo")
 
-# ── SLIDE 5 — How It Works ───────────────────────────────────────────────────
-s5 = prs.slides.add_slide(BLANK)
-add_bg(s5, LIGHT)
-section_header(s5, "How It Works in Practice", "Four steps to operational security clarity")
-accent_bar(s5)
-
-four_box_row(s5,
-    [
-        ("1. Onboard", "Deploy monitoring on a small, agreed scope of critical systems"),
-        ("2. Detect", "Filter noisy alerts and identify meaningful issues first"),
-        ("3. Harden", "Apply practical security improvements on approved systems"),
-        ("4. Report", "Deliver clear findings, risks, and recommended next actions"),
-    ],
-    row_top=Inches(2.0),
-    box_w=Inches(2.7),
-    box_h=Inches(3.2),
-    gap=Inches(0.3))
-
-# Bottom note
-textbox(s5, "Small scope. Clear signal. Practical improvements. Useful reporting.",
-        Inches(0.7), Inches(5.8), Inches(11.9), Inches(0.8),
-        size=13, italic=True, color=TEAL, align=PP_ALIGN.CENTER)
-
-# ── SLIDE 6 — Demo Proof ─────────────────────────────────────────────────────
-s6 = prs.slides.add_slide(BLANK)
-add_bg(s6, LIGHT)
-section_header(s6, "What We've Already Proven", "MVP Demo Results")
-accent_bar(s6)
-
-# Stats row
 stats = [
-    ("2", "Active agents enrolled\nand monitoring"),
-    ("1,243", "Security events captured\nin 24-hr window"),
-    ("373", "CIS benchmark checks\nrun across demo"),
-    ("42", "Medium risk score\npost-hardening"),
+    ("2",         "Active agents\nmonitoring"),
+    ("1,243",     "Events captured\nin 24 hrs"),
+    ("373",       "CIS benchmark\nchecks run"),
+    ("42",        "Risk score\npost-hardening"),
 ]
-total_w = 4 * Inches(2.6) + 3 * Inches(0.5)
-start_x = (prs.slide_width - total_w) / 2
+sw = Inches(2.8); sg = Inches(0.4)
+total = 4*sw + 3*sg; sx = (prs.slide_width - total) / 2
+cols  = [ACCENT, ACCENT2, TEAL, RGBColor(0xA7,0x8A,0xF5)]
 for i, (num, desc) in enumerate(stats):
-    x = start_x + i * (Inches(2.6) + Inches(0.5))
-    # number
-    textbox(s6, num, x, Inches(1.6), Inches(2.6), Inches(1.0),
-            size=48, bold=True, color=TEAL, align=PP_ALIGN.CENTER)
-    # description
-    textbox(s6, desc, x, Inches(2.65), Inches(2.6), Inches(0.8),
-            size=13, bold=False, color=GREY_TEXT, align=PP_ALIGN.CENTER)
+    x = sx + i*(sw+sg)
+    pill(s, num, x, Inches(1.65), sw, Inches(0.95), bg=cols[i], sz=38)
+    tx(s, desc, x, Inches(2.75), sw, Inches(0.75), sz=13, col=MUTED, ali=PP_ALIGN.CENTER)
 
-# Findings detail
-textbox(s6, "Key findings from demo environment:",
-        Inches(0.7), Inches(3.6), Inches(11.9), Inches(0.4),
-        size=15, bold=True, color=NAVY, align=PP_ALIGN.LEFT)
+divider(s, Inches(0.6), Inches(3.65), Inches(12.1), col=RGBColor(0x2A,0x35,0x4A))
+tx(s, "Key findings:", Inches(0.6), Inches(3.85), Inches(12), Inches(0.4), sz=15, bold=True, col=WHITE)
+bul(s, [
+    "SSH brute-force detected within minutes (rule 5710)",
+    "PAM auth failures flagged — rule 5503",
+    "Docker DNS and service failures captured automatically",
+    "373 CIS failures found; 14 remediated post-hardening",
+], Inches(0.6), Inches(4.3), Inches(12.1), Inches(2.2), sz=14, col=TEXT, sp=6)
 
-findings = [
-    "SSH brute-force attempts detected and alerted within minutes",
-    "PAM authentication failures flagged by rule 5503",
-    "Rancher agent service failures captured automatically",
-    "373 CIS benchmark failures identified; 14 remediated post-hardening",
-    "Before/after SCA comparison shows measurable improvement in security posture",
-]
-bullet_box(s6, findings,
-           Inches(0.7), Inches(4.0), Inches(11.9), Inches(2.8),
-           size=14, color=DARK_TEXT, spacing_before=6)
+box = s.shapes.add_shape(1, Inches(0.6), Inches(6.6), Inches(12.1), Inches(0.7))
+box.fill.solid(); box.fill.fore_color.rgb = RGBColor(0x0D,0x28,0x1A); box.line.color.rgb = ACCENT; box.line.width = Pt(1.5)
+tx(s, "Result: Ready for first customer pilot. Full service flow built and tested.",
+   Inches(0.85), Inches(6.67), Inches(11.5), Inches(0.5), sz=13, bold=True, col=ACCENT)
 
-# ── SLIDE 7 — Pilot Details ──────────────────────────────────────────────────
-s7 = prs.slides.add_slide(BLANK)
-add_bg(s7, LIGHT)
-section_header(s7, "The 30-Day Pilot", "Proven process, limited scope, fast results")
-accent_bar(s7)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 7 — 30-DAY PILOT  (5-second: scope + outcome + price)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "Start with a 30-Day Pilot", "Narrow scope. Fast results. No long-term commitment.")
 
-# Left column — what you get
-textbox(s7, "What you get",
-           Inches(0.7), Inches(1.45), Inches(5.5), Inches(0.4),
-           size=15, bold=True, color=NAVY, align=PP_ALIGN.LEFT)
-pilot_get = [
-    "Baseline security scan on agreed scope",
+lbox = s.shapes.add_shape(1, Inches(0.6), Inches(1.55), Inches(5.9), Inches(4.0))
+lbox.fill.solid(); lbox.fill.fore_color.rgb = SURFACE; lbox.line.color.rgb = ACCENT2; lbox.line.width = Pt(1.5)
+tx(s, "What you get", Inches(0.85), Inches(1.68), Inches(5.4), Inches(0.4), sz=15, bold=True, col=ACCENT2)
+bul(s, [
+    "3–10 critical Linux servers in scope",
     "Wazuh agent deployment + enrollment",
-    "CIS-aligned hardening on approved systems",
-    "24/7 managed monitoring + alert triage",
-    "Weekly findings summary",
-    "End-of-pilot management report",
-]
-bullet_box(s7, pilot_get,
-           Inches(0.7), Inches(1.9), Inches(5.8), Inches(3.5),
-           size=14, color=DARK_TEXT, spacing_before=8)
+    "Baseline findings report",
+    "Practical hardening applied",
+    "Management-ready final report",
+], Inches(0.85), Inches(2.12), Inches(5.4), Inches(3.0), sz=14, col=TEXT, sp=8)
 
-# Right column — pilot structure
-textbox(s7, "Pilot structure",
-           Inches(7.0), Inches(1.45), Inches(5.5), Inches(0.4),
-           size=15, bold=True, color=NAVY, align=PP_ALIGN.LEFT)
-pilot_struct = [
-    "Week 1: Deploy monitoring, establish baseline",
-    "Week 2: Apply hardening on agreed systems",
-    "Weeks 3–4: Monitor, triage, report",
-    "Day 30: Review call + conversion options",
-    "RM 2,000 one-time pilot fee",
-    "No long-term commitment required",
-]
-bullet_box(s7, pilot_struct,
-           Inches(7.0), Inches(1.9), Inches(5.8), Inches(3.5),
-           size=14, color=DARK_TEXT, spacing_before=8)
+rbox = s.shapes.add_shape(1, Inches(6.8), Inches(1.55), Inches(5.9), Inches(4.0))
+rbox.fill.solid(); rbox.fill.fore_color.rgb = SURFACE; rbox.line.color.rgb = ACCENT; rbox.line.width = Pt(1.5)
+tx(s, "What you decide at Day 30", Inches(7.05), Inches(1.68), Inches(5.4), Inches(0.4), sz=15, bold=True, col=ACCENT)
+bul(s, [
+    "Continue on a monthly service",
+    "Expand scope to more systems",
+    "Or stop — no lock-in required",
+], Inches(7.05), Inches(2.12), Inches(5.4), Inches(2.5), sz=14, col=TEXT, sp=8)
 
-# Bottom callout
-callout_box(s7,
-            "RM 2,000 | 30 days | No ongoing commitment | Management report included",
-            Inches(0.7), Inches(5.7), Inches(11.9), Inches(0.9), size=14)
+pbox = s.shapes.add_shape(1, Inches(0.6), Inches(5.75), Inches(12.1), Inches(1.45))
+pbox.fill.solid(); pbox.fill.fore_color.rgb = SURFACE; pbox.line.color.rgb = TEAL; pbox.line.width = Pt(2)
+tx(s, "Pilot pricing:", Inches(0.85), Inches(5.87), Inches(2.0), Inches(0.4), sz=13, bold=True, col=TEAL)
+tx(s, "RM 2,000 – RM 5,000  (scope-dependent)", Inches(2.85), Inches(5.87), Inches(9.5), Inches(0.4), sz=18, bold=True, col=WHITE)
+tx(s, "We keep the first engagement narrow on purpose — prove value fast, no transformation project required.",
+   Inches(0.85), Inches(6.28), Inches(11.5), Inches(0.5), sz=12, italic=True, col=MUTED)
 
-# ── SLIDE 8 — Pricing / Next Steps ──────────────────────────────────────────
-s8 = prs.slides.add_slide(BLANK)
-add_bg(s8, LIGHT)
-section_header(s8, "After the Pilot — Conversion Paths", "Three options based on where you are")
-accent_bar(s8)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 8 — PRICING  (5-second: 3 tiers, simple)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+slide_title(s, "Continuation After Pilot", "Start narrow. Prove value. Expand based on real need.")
 
 tiers = [
-    ("Watcher\nRM 1,500 / month",
-     ["Managed monitoring only",
-      "Alert triage + weekly digest",
-      "Monthly report",
-      "Up to 5 agents"]),
-    ("Guardian\nRM 3,000 / month",
-     ["Everything in Watcher",
-      "Proactive hardening (monthly)",
-      "Quarterly SCA scan",
-      "Up to 15 agents",
-      "Monthly sync call"]),
-    ("Fortress\nCustom pricing",
-     ["Everything in Guardian",
-      "Continuous hardening",
-      "Weekly SCA scans",
-      "Unlimited agents",
-      "Dedicated analyst (PT)",
-      "Incident response SLA"]),
+    ("STARTER",   "RM 1,500–2,500 / mo", ACCENT,   [
+        "Smaller environments",
+        "Up to 5 agents",
+        "Alert triage + weekly digest",
+        "Monthly management report",
+        "Email support",
+    ]),
+    ("GROWTH",    "RM 3,000–5,000 / mo", ACCENT2,  [
+        "Most production teams",
+        "Up to 15 agents",
+        "Proactive monthly hardening",
+        "Quarterly SCA scan",
+        "Monthly sync call",
+        "Priority support",
+    ]),
+    ("REGULATED", "Custom pricing",        RGBColor(0xA7,0x8A,0xF5), [
+        "Stronger compliance scope",
+        "Everything in Growth",
+        "Weekly SCA scans",
+        "Unlimited agents",
+        "Dedicated analyst (PT)",
+        "Incident response SLA",
+    ]),
 ]
+tw = Inches(3.6); tg = Inches(0.42)
+total = 3*tw + 2*tg; sx = (prs.slide_width - total) / 2
+for i, (name, price, col, items) in enumerate(tiers):
+    x = sx + i*(tw+tg)
+    box = s.shapes.add_shape(1, x, Inches(1.55), tw, Inches(5.0))
+    box.fill.solid(); box.fill.fore_color.rgb = SURFACE
+    box.line.color.rgb = col; box.line.width = Pt(2 if i==1 else 1)
+    pill(s, name, x+Inches(0.4), Inches(1.7), tw-Inches(0.8), Inches(0.45), bg=col, sz=14)
+    tx(s, price, x+Inches(0.15), Inches(2.25), tw-Inches(0.3), Inches(0.45),
+       sz=15, bold=True, col=WHITE, ali=PP_ALIGN.CENTER)
+    bul(s, items, x+Inches(0.2), Inches(2.75), tw-Inches(0.4), Inches(3.5),
+       sz=12, col=TEXT, sp=6)
 
-total_w = 3 * Inches(3.5) + 2 * Inches(0.5)
-start_x = (prs.slide_width - total_w) / 2
-colours = [GREY_TEXT, TEAL, NAVY]
-for i, (title, bullets) in enumerate(tiers):
-    x = start_x + i * (Inches(3.5) + Inches(0.5))
-    # Box
-    box = s8.shapes.add_shape(1, x, Inches(1.5), Inches(3.5), Inches(4.5))
-    box.fill.solid()
-    box.fill.fore_color.rgb = colours[i]
-    box.line.fill.background()
-    tf = box.text_frame
-    tf.word_wrap = True
+tx(s, "* All tiers include PDPA-aligned reporting. Custom scopes available on request.",
+   Inches(0.6), Inches(6.75), Inches(12.1), Inches(0.4),
+   sz=11, italic=True, col=MUTED, ali=PP_ALIGN.CENTER)
 
-    # Title
-    p = tf.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
-    run = p.add_run()
-    run.text = title
-    run.font.size = Pt(15)
-    run.font.bold = True
-    run.font.color.rgb = WHITE
+# ═══════════════════════════════════════════════════════════════════════════════
+# SLIDE 9 — CTA  (5-second: 20-min call, then pilot)
+# ═══════════════════════════════════════════════════════════════════════════════
+s = prs.slides.add_slide(BLANK); bg(s)
+tx(s, "Let's find out if we're a fit.",
+   Inches(0.7), Inches(1.4), Inches(12), Inches(0.9), sz=40, bold=True, col=WHITE)
+tx(s, "20-minute discovery call — no pitch, no pressure.",
+   Inches(0.7), Inches(2.4), Inches(12), Inches(0.55), sz=20, col=MUTED)
+divider(s, Inches(0.7), Inches(3.1), Inches(4), col=ACCENT)
 
-    for b in bullets:
-        p2 = tf.add_paragraph()
-        p2.alignment = PP_ALIGN.LEFT
-        p2.space_before = Pt(4)
-        run2 = p2.add_run()
-        run2.text = f"✓ {b}"
-        run2.font.size = Pt(12)
-        run2.font.color.rgb = WHITE if i != 1 else RGBColor(0xD0,0xF0,0xEC)
+disc = [
+    ("Environment fit",     "Assess Linux/cloud workload scope"),
+    ("Critical systems",     "Identify what matters most"),
+    ("Visibility gaps",      "Map security blind spots"),
+    ("Pilot suitability",   "Confirm fit for 30-day pilot"),
+]
+dw = Inches(2.75); dg = Inches(0.38)
+total = 4*dw + 3*dg; sx = (prs.slide_width - total) / 2
+for i, (title, desc) in enumerate(disc):
+    x = sx + i*(dw+dg)
+    b = s.shapes.add_shape(1, x, Inches(3.4), dw, Inches(1.8))
+    b.fill.solid(); b.fill.fore_color.rgb = SURFACE; b.line.color.rgb = ACCENT2; b.line.width = Pt(1)
+    tx(s, title, x+Inches(0.15), Inches(3.5), dw-Inches(0.3), Inches(0.4), sz=13, bold=True, col=ACCENT2)
+    tx(s, desc, x+Inches(0.15), Inches(3.95), dw-Inches(0.3), Inches(1.0), sz=12, col=TEXT)
 
-textbox(s8, "* All tiers include PDPA-aligned reporting. Custom scopes available on request.",
-        Inches(0.7), Inches(6.2), Inches(11.9), Inches(0.5),
-        size=11, italic=True, color=GREY_TEXT, align=PP_ALIGN.CENTER)
-
-# ── SLIDE 9 — Contact / CTA ───────────────────────────────────────────────────
-s9 = prs.slides.add_slide(BLANK)
-add_bg(s9, NAVY)
-
-textbox(s9, "Let's find out if we're a fit.",
-        Inches(0.8), Inches(1.8), Inches(11.5), Inches(0.9),
-        size=36, bold=True, color=WHITE, align=PP_ALIGN.LEFT)
-
-textbox(s9, "The first step is a 20-minute discovery call — no pitch, no pressure.",
-        Inches(0.8), Inches(2.7), Inches(10), Inches(0.6),
-        size=20, bold=False, color=RGBColor(0xA0,0xC0,0xD0), align=PP_ALIGN.LEFT)
-
-bar = s9.shapes.add_shape(1, Inches(0.8), Inches(3.4), Inches(3), Pt(4))
-bar.fill.solid()
-bar.fill.fore_color.rgb = TEAL
-bar.line.fill.background()
-
-textbox(s9, "[Your Name]",
-        Inches(0.8), Inches(3.7), Inches(10), Inches(0.5),
-        size=18, bold=True, color=WHITE, align=PP_ALIGN.LEFT)
-textbox(s9, "Founder / Operator, Sentinel Ops",
-        Inches(0.8), Inches(4.15), Inches(10), Inches(0.4),
-        size=14, bold=False, color=RGBColor(0xA0,0xC0,0xD0), align=PP_ALIGN.LEFT)
-
-textbox(s9, "📧  [email@domain.com]",
-        Inches(0.8), Inches(4.8), Inches(10), Inches(0.4),
-        size=15, bold=False, color=WHITE, align=PP_ALIGN.LEFT)
-textbox(s9, "💬  [WhatsApp number]",
-        Inches(0.8), Inches(5.2), Inches(10), Inches(0.4),
-        size=15, bold=False, color=WHITE, align=PP_ALIGN.LEFT)
-textbox(s9, "💼  [LinkedIn profile URL]",
-        Inches(0.8), Inches(5.6), Inches(10), Inches(0.4),
-        size=15, bold=False, color=WHITE, align=PP_ALIGN.LEFT)
-
-textbox(s9, "sentinelops.my  |  demo: seeln.site",
-        Inches(0.8), Inches(6.3), Inches(10), Inches(0.4),
-        size=12, bold=False, color=RGBColor(0x60,0x80,0x90), align=PP_ALIGN.LEFT)
+divider(s, Inches(0.7), Inches(5.4), Inches(12.1), col=RGBColor(0x2A,0x35,0x4A))
+tx(s, "If the fit is right, Sentinel Ops can start with a limited 30-day pilot.",
+   Inches(0.7), Inches(5.6), Inches(12), Inches(0.45), sz=16, bold=True, col=ACCENT)
+tx(s, "[Your Name]",      Inches(0.7), Inches(6.2), Inches(12), Inches(0.45), sz=18, bold=True, col=WHITE)
+tx(s, "[email]   [WhatsApp]   [LinkedIn]",
+   Inches(0.7), Inches(6.6), Inches(12), Inches(0.35), sz=13, col=MUTED)
 
 # ── Save ─────────────────────────────────────────────────────────────────────
 out = "/root/.openclaw/workspace/projects/sentinel_ops/sales/Sentinel_Ops_Sales_Deck.pptx"
