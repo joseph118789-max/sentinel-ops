@@ -23,17 +23,17 @@
 - [ ] symlink exists in `/etc/nginx/sites-enabled/`
 - [ ] `nginx -t` passes
 - [ ] `systemctl reload nginx` succeeds
-- [ ] `http://seeln.site` loads the landing page
+- [ ] `http://sentinel.seekn.site` loads the landing page
 
 ## DNS
-- [ ] `seeln.site` resolves to `187.127.97.175`
+- [ ] `sentinel.seekn.site` resolves to `187.127.97.175`
 - [ ] Cloudflare is set to **DNS only** (proxied: false)
-- [ ] if using `www`, `www.seeln.site` also resolves correctly
+- [ ] if using `www`, `www.sentinel.seekn.site` also resolves correctly
 
 ## SSL
 - [ ] certbot completed successfully
-- [ ] `https://seeln.site` loads without certificate warning
-- [ ] if using `www`, `https://www.seeln.site` also works
+- [ ] `https://sentinel.seekn.site` loads without certificate warning
+- [ ] if using `www`, `https://www.sentinel.seekn.site` also works
 - [ ] HTTP redirects cleanly to HTTPS
 
 ## Links / Actions

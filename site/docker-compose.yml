@@ -8,4 +8,4 @@ services:
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html:ro
     labels:
-      - "com.sentinelops.domain=seeln.site"
+      - "com.sentinelops.domain=sentinel.seekn.site"

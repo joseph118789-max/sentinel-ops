@@ -22,7 +22,7 @@ Use:
 ## 2. Point DNS
 
 In Cloudflare:
-- `A` record: `seeln.site` → `187.127.97.175`
+- `A` record: `sentinel.seekn.site` → `187.127.97.175`
 - set to **DNS only** (proxied: false)
 - optional: add `www` A record too
 
@@ -86,8 +86,8 @@ nginx -t && systemctl reload nginx
 ## 6. Test HTTP
 
 Open:
-- `http://seeln.site`
-- `http://www.seeln.site` (if www configured)
+- `http://sentinel.seekn.site`
+- `http://www.sentinel.seekn.site` (if www configured)
 
 ---
 
@@ -96,12 +96,12 @@ Open:
 ```bash
 ssh root@187.127.97.175
 apt install -y certbot python3-certbot-nginx
-certbot --nginx -d seeln.site -d www.seeln.site
+certbot --nginx -d sentinel.seekn.site -d www.sentinel.seekn.site
 ```
 
 Or without www:
 ```bash
-certbot --nginx -d seeln.site
+certbot --nginx -d sentinel.seekn.site
 ```
 
 ---
@@ -121,7 +121,7 @@ Check:
 Use short message + site link. No PDF on first touch.
 
 Message:
-> Hi [Name] — I'm building Sentinel Ops, lean managed cybersecurity for teams that need better monitoring, hardening, and security reporting without building a full SOC. Short overview: [seeln.site]. If it looks relevant, open to a quick conversation?
+> Hi [Name] — I'm building Sentinel Ops, lean managed cybersecurity for teams that need better monitoring, hardening, and security reporting without building a full SOC. Short overview: [sentinel.seekn.site]. If it looks relevant, open to a quick conversation?
 
 Log the send. Bring results back.
 
