@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Ops — Lean Managed Cybersecurity for Malaysian SMEs</title>
+  <meta name="description" content="Practical monitoring, hardening, and security reporting for lean IT teams. Start with a 30-day pilot.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0B1220;
+      --surface: #141E2E;
+      --border:  #1E2D3D;
+      --text:    #F8FAFC;
+      --muted:   #94A3B8;
+      --accent:  #22C55E;
+      --accent2: #38BDF8;
+      --teal:    #00B88A;
+      --purple:  #A78BFA;
+      --font:    'Inter', system-ui, sans-serif;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 0;
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); font-size: 0.875rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    @media(max-width:640px) { .nav-links { display: none; } }
+
+    /* ── BUTTONS ─────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { text-decoration: none; opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+
+    /* ── SECTION BASE ────────────────────────────── */
+    section { padding: 5rem 0; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero {
+      padding: 7rem 0 5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 3.75rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      max-width: 14ch;
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero .lead {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 54ch;
+      margin-bottom: 2rem;
+    }
+    .hero .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero .cta-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── PROBLEM ─────────────────────────────────── */
+    .problem { border-bottom: 1px solid var(--border); }
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+    }
+    .problem-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .problem-card p { font-size: 0.875rem; color: var(--muted); }
+
+    /* ── WHAT WE DO ──────────────────────────────── */
+    .services { border-bottom: 1px solid var(--border); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+      border-top: 3px solid var(--accent);
+    }
+    .service-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .service-card p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── WHO IT'S FOR ────────────────────────────── */
+    .who { border-bottom: 1px solid var(--border); }
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .who-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .who-item .icon {
+      width: 36px; height: 36px;
+      background: rgba(34,197,94,0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .who-item span { font-size: 0.9rem; font-weight: 500; }
+
+    /* ── PILOT ───────────────────────────────────── */
+    .pilot { border-bottom: 1px solid var(--border); }
+    .pilot-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      align-items: start;
+    }
+    @media(max-width:640px) { .pilot-layout { grid-template-columns: 1fr; } }
+    .pilot-scope {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .pilot-scope h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+    .pilot-scope ul { list-style: none; }
+    .pilot-scope ul li {
+      font-size: 0.9rem;
+      color: var(--text);
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pilot-scope ul li:last-child { border-bottom: none; }
+    .pilot-scope ul li::before {
+      content: "✓ ";
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .pilot-price {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .pilot-price .amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .pilot-price .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+    .pilot-price .note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    /* ── PROOF ───────────────────────────────────── */
+    .proof { border-bottom: 1px solid var(--border); }
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    @media(max-width:640px) { .proof-grid { grid-template-columns: repeat(2, 1fr); } }
+    .proof-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .proof-stat .num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .proof-stat .desc { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+    .proof-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── CTA ─────────────────────────────────────── */
+    .cta-section { text-align: center; padding: 6rem 0; }
+    .cta-section h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; max-width: 48ch; margin-left: auto; margin-right: auto; }
+    .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+    .contact-channels {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .contact-channels a {
+      color: var(--muted);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .contact-channels a:hover { color: var(--text); }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── DIVIDER ─────────────────────────────────── */
+    .section-divider {
+      width: 3rem;
+      height: 3px;
+      background: var(--accent);
+      margin: 1.5rem 0 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────── -->
+  <nav>
+    <div class="container">
+      <div class="logo">Sentinel <span>Ops</span></div>
+      <ul class="nav-links">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#services">What We Do</a></li>
+        <li><a href="#who">Who It's For</a></li>
+        <li><a href="#pilot">30-Day Pilot</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <h1>
+        Lean Managed<br>
+        Cybersecurity<br>
+        <span class="accent">Without the SOC</span>
+      </h1>
+      <p class="lead">
+        Monitoring, hardening, and audit-ready reporting for Malaysian SMEs and growing teams — without the cost and complexity of a full Security Operations Center.
+      </p>
+      <div class="cta-row">
+        <a href="#contact" class="btn btn-primary">Book a Discovery Call</a>
+        <a href="#pilot" class="btn btn-outline">30-Day Pilot</a>
+      </div>
+      <p class="cta-note">No commitment required · RM 2,000–5,000 for pilot scope</p>
+    </div>
+  </section>
+
+  <!-- ── PROBLEM ─────────────────────────────────────── -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <p class="section-label">The Problem</p>
+      <h2 class="section-title">Why growing companies struggle with security operations</h2>
+      <p class="section-sub">Most companies know they need better security. The challenge is operational, not tooling.</p>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <h3>Alert noise</h3>
+          <p>Security tools fire hundreds of alerts. Nobody has time to triage them. Real issues get buried.</p>
+        </div>
+        <div class="problem-card">
+          <h3>No time for hardening</h3>
+          <p>IT teams are fighting fires. Baseline hardening falls off the priority list and systems drift.</p>
+        </div>
+        <div class="problem-card">
+          <h3>Compliance pressure rising</h3>
+          <p>PDPA compliance, enterprise security questionnaires, and audit expectations are getting stricter.</p>
+        </div>
+        <div class="problem-card">
+          <h3>SOC is too expensive</h3>
+          <p>Full Security Operations Center is RM 10k–30k/month. Most SMEs don't have the headcount or budget.</p>
+        </div>
+        <div class="problem-card">
+          <h3>Lean teams, real exposure</h3>
+          <p>Small IT teams handle critical infrastructure with no dedicated security operations function.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHAT WE DO ─────────────────────────────────── -->
+  <section class="services" id="services">
+    <div class="container">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">A lean managed security layer</h2>
+      <p class="section-sub">Practical outcomes, not dashboards. We run the operating layer so your team doesn't have to.</p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <h3>Managed Monitoring</h3>
+          <p>24/7 coverage for Linux and cloud environments. Real alerts surface, noise is filtered.</p>
+        </div>
+        <div class="service-card">
+          <h3>Alert Triage</h3>
+          <p>We prioritize meaningful issues so your team sees what actually matters.</p>
+        </div>
+        <div class="service-card">
+          <h3>Baseline Hardening</h3>
+          <p>Practical CIS-aligned controls applied on approved systems, not theoretical hardening.</p>
+        </div>
+        <div class="service-card">
+          <h3>Monthly Reporting</h3>
+          <p>Management-ready output — findings, risk trends, and recommended next steps.</p>
+        </div>
+        <div class="service-card">
+          <h3>Pilot-First Model</h3>
+          <p>Start with a limited 30-day engagement. Prove value before any ongoing commitment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHO IT'S FOR ───────────────────────────────── -->
+  <section class="who" id="who">
+    <div class="container">
+      <p class="section-label">Who It's For</p>
+      <h2 class="section-title">Intentionally focused</h2>
+      <p class="section-sub">We win where security pressure is real and internal security operations are still lean.</p>
+
+      <div class="who-grid">
+        <div class="who-item">
+          <div class="icon">💻</div>
+          <span>SaaS companies</span>
+        </div>
+        <div class="who-item">
+          <div class="icon">🏥</div>
+          <span>Healthtech</span>
+        </div>
+        <div class="who-item">
+          <div class="icon">📦</div>
+          <span>Logistics tech</span>
+        </div>
+        <div class="who-item">
+          <div class="icon">🏦</div>
+          <span>Fintech-adjacent</span>
+        </div>
+        <div class="who-item">
+          <div class="icon">☁️</div>
+          <span>Linux / cloud teams</span>
+        </div>
+        <div class="who-item">
+          <div class="icon">📋</div>
+          <span>PDPA compliance pressure</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 30-DAY PILOT ───────────────────────────────── -->
+  <section class="pilot" id="pilot">
+    <div class="container">
+      <p class="section-label">Start Here</p>
+      <h2 class="section-title">The 30-Day Pilot</h2>
+      <p class="section-sub">Narrow scope. Fast results. No long-term commitment required.</p>
+
+      <div class="pilot-layout">
+        <div class="pilot-scope">
+          <h3>Pilot scope</h3>
+          <ul>
+            <li>3–10 critical Linux servers</li>
+            <li>Wazuh agent deployment and enrollment</li>
+            <li>Baseline findings report</li>
+            <li>Practical hardening on agreed systems</li>
+            <li>Management-ready final report</li>
+            <li>Day 30 review call</li>
+          </ul>
+        </div>
+        <div class="pilot-price">
+          <div class="amount">RM 2,000</div>
+          <div class="sub">pilot fee · scope-dependent pricing</div>
+          <div class="sub" style="margin-top:0.5rem">RM 3,000–5,000 total for full pilot</div>
+          <div class="note">No lock-in. Decision point at Day 30.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROOF ──────────────────────────────────────── -->
+  <section class="proof" id="proof">
+    <div class="container">
+      <p class="section-label">What We've Proven</p>
+      <h2 class="section-title">Internal MVP demo results</h2>
+      <p class="section-sub">Working monitoring and hardening flow — built and tested before first customer.</p>
+
+      <div class="proof-grid">
+        <div class="proof-stat">
+          <div class="num">2</div>
+          <div class="desc">Active agents enrolled and monitoring</div>
+        </div>
+        <div class="proof-stat">
+          <div class="num">1,243</div>
+          <div class="desc">Security events captured in 24 hrs</div>
+        </div>
+        <div class="proof-stat">
+          <div class="num">373</div>
+          <div class="desc">CIS benchmark checks executed</div>
+        </div>
+        <div class="proof-stat">
+          <div class="num">42</div>
+          <div class="desc">Risk score post-hardening</div>
+        </div>
+      </div>
+
+      <p class="proof-note">Numbers from internal MVP demo environment. Key findings: SSH brute-force detected, PAM auth failures flagged, Docker service failures captured automatically, 14 CIS failures remediated post-hardening.</p>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────── -->
+  <section class="cta-section" id="contact">
+    <div class="container">
+      <h2>Ready to see if we're a fit?</h2>
+      <p>The first step is a short discovery call — no pitch, no commitment. If the fit is right, we scope a 30-day pilot and move fast.</p>
+      <div class="cta-row">
+        <a href="mailto:[email]" class="btn btn-primary">Email Us</a>
+        <a href="https://wa.me/[whatsapp]" class="btn btn-outline">WhatsApp</a>
+      </div>
+      <div class="contact-channels">
+        <a href="mailto:[email]">📧 [email@domain.com]</a>
+        <a href="https://wa.me/[whatsapp]">💬 [WhatsApp number]</a>
+        <a href="[LinkedIn URL]">💼 LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>Sentinel Ops · Lean Managed Cybersecurity · Malaysia</p>
+    </div>
+  </footer>
+
+</body>
+</html>
